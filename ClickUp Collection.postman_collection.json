@@ -14,7 +14,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"my_value_from_script\", \"UnicData\");"
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -24,13 +24,31 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"pm.test(\"Body includ appropriate name\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Project\");\r",
-							"});\r",
-							""
+							"const Ajv = require('ajv');\r",
+							"const ajv = new Ajv();\r",
+							"\r",
+							"const schema = {\r",
+							"    type: \"object\",\r",
+							"    properties: {\r",
+							"        \"list\": {\r",
+							"            type: \"object\",\r",
+							"            properties: {\r",
+							"                \"id\": {type: \"integer\"},\r",
+							"                \"name\": {type: \"string\"},\r",
+							"                \"task_count\": {type: \"integer\"}\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"const validate = ajv.compile(schema);\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"\r",
+							"pm.test(\"Schema is valid\", function () {\r",
+							"   const valid = validate(response);\r",
+							"   pm.expect(valid, JSON.stringify(validate.errors)).to.be.true;\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -82,14 +100,73 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
+							"const Ajv = require('ajv');\r",
+							"const ajv = new Ajv();\r",
 							"\r",
-							"    var jsonData = pm.response.json();\r",
-							"    var id = jsonData.id\r",
+							"// Created by Postbot\r",
 							"\r",
-							"pm.environment.set(\"list_id\", id);"
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"id\": { \"type\": \"string\" },\r",
+							"        \"name\": { \"type\": \"string\" },\r",
+							"        \"deleted\": { \"type\": \"boolean\" },\r",
+							"        \"orderindex\": { \"type\": \"number\" },\r",
+							"        \"content\": { \"type\": \"string\" },\r",
+							"        \"priority\": { \"type\": [\"null\", \"string\"] },\r",
+							"        \"assignee\": { \"type\": [\"null\", \"string\"] },\r",
+							"        \"due_date\": { \"type\": [\"null\", \"string\"] },\r",
+							"        \"start_date\": { \"type\": [\"null\", \"string\"] },\r",
+							"        \"folder\": {\r",
+							"            \"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"                \"id\": { \"type\": \"string\" },\r",
+							"                \"name\": { \"type\": \"string\" },\r",
+							"                \"hidden\": { \"type\": \"boolean\" },\r",
+							"                \"access\": { \"type\": \"boolean\" }\r",
+							"            },\r",
+							"            \"required\": [\"id\", \"name\", \"hidden\", \"access\"]\r",
+							"        },\r",
+							"        \"space\": {\r",
+							"            \"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"                \"id\": { \"type\": \"string\" },\r",
+							"                \"name\": { \"type\": \"string\" },\r",
+							"                \"access\": { \"type\": \"boolean\" }\r",
+							"            },\r",
+							"            \"required\": [\"id\", \"name\", \"access\"]\r",
+							"        },\r",
+							"        \"inbound_address\": { \"type\": \"string\" },\r",
+							"        \"archived\": { \"type\": \"boolean\" },\r",
+							"        \"override_statuses\": { \"type\": \"boolean\" },\r",
+							"        \"statuses\": {\r",
+							"            \"type\": \"array\",\r",
+							"            \"items\": {\r",
+							"                \"type\": \"object\",\r",
+							"                \"properties\": {\r",
+							"                    \"id\": { \"type\": \"string\" },\r",
+							"                    \"status\": { \"type\": \"string\" },\r",
+							"                    \"orderindex\": { \"type\": \"number\" },\r",
+							"                    \"color\": { \"type\": \"string\" },\r",
+							"                    \"type\": { \"type\": \"string\" },\r",
+							"                    \"status_group\": { \"type\": \"string\" }\r",
+							"                },\r",
+							"                \"required\": [\"id\", \"status\", \"orderindex\", \"color\", \"type\", \"status_group\"]\r",
+							"            }\r",
+							"        },\r",
+							"        \"permission_level\": { \"type\": \"string\" }\r",
+							"    },\r",
+							"    \"required\": [\"id\", \"name\", \"deleted\", \"orderindex\", \"content\", \"folder\", \"space\", \"inbound_address\", \"archived\", \"override_statuses\", \"statuses\", \"permission_level\"]\r",
+							"};\r",
+							"\r",
+							"const validate = ajv.compile(schema);\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"\r",
+							"pm.test(\"Schema is valid\", function () {\r",
+							"   const valid = validate(response);\r",
+							"   pm.expect(valid, JSON.stringify(validate.errors)).to.be.true;\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -164,9 +241,39 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
+							"const Ajv = require('ajv');\r",
+							"const ajv = new Ajv();\r",
+							"\r",
+							"var schema = {\r",
+							"    type: \"object\",\r",
+							"    properties: {\r",
+							"        \"list\" : {type: \"object\",\r",
+							"        properties: {\r",
+							"            \"id\": {type: \"integer\"},\r",
+							"            \"name\": {type: \"string\"},\r",
+							"            \"deleted\" : {type: \"boolean\"},\r",
+							"        },\r",
+							"        required:[\"id\", \"name\"]\r",
+							"        }\r",
+							"    }\r",
+							"}\r",
+							"const validate = ajv.compile(schema);\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Schema is valid\", function () {\r",
+							"   const valid = validate(response);\r",
+							"   pm.expect(valid, JSON.stringify(validate.errors)).to.be.true;\r",
 							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -217,21 +324,125 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Fixed the syntax error with the placeholder\r",
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Verify error and ECODE are not empty\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.err).to.not.be.empty;\r",
-							"    pm.expect(jsonData.ECODE).to.not.be.empty;\r",
-							"});\r",
+							"try {\r",
+							"    const response = await pm.sendRequest({\r",
+							"        url: \"https://api.clickup.com/api/v2/folder/90156853247/list\",\r",
+							"        method: \"DELETE\",\r",
+							"        header: {\"Authorization\": \"pk_194448192_K8TF4EQBGZS7DZJ2GKEXBKRL7O44LJ8A\"}\r",
+							"    });\r",
 							"\r",
-							"pm.test(\"Verify list_id in the response\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"list_id\"));\r",
-							"});\r",
+							"    console.log(response.json());\r",
+							"} catch (err) {\r",
+							"    console.error(err);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.log(\"pre-request\")\r",
+							"\r",
+							"var random_name = pm.variables.replaceIn(\"{{$randomAlphaNumeric}}\")\r",
+							"console.log(random_name)\r",
+							"\r",
+							"pm.collectionVariables.set(\"ListName\", random_name);\r",
+							"\r",
+							"\r",
+							"try {\r",
+							"    const response = await pm.sendRequest({\r",
+							"        url: \"https://api.clickup.com/api/v2/folder/90156853247/list\",\r",
+							"        method: \"POST\",\r",
+							"        header: {\"Authorization\": \"pk_194448192_K8TF4EQBGZS7DZJ2GKEXBKRL7O44LJ8A\"},\r",
+							"        body: {\r",
+							"            mode: \"raw\",\r",
+							"            raw: JSON.stringify({name: \"someName\"})\r",
+							"    });\r",
+							"\r",
+							"    console.log(response.json());\r",
+							"} catch (err) {\r",
+							"    console.error(err);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "pk_194448192_K8TF4EQBGZS7DZJ2GKEXBKRL7O44LJ8A",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{$randomAlphaNumeric}}\",\r\n    \"content\": \"some text manual data\"\r\n    \r\n}\r\n\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/list/{{list_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"list",
+						"{{list_id}}"
+					]
+				},
+				"description": "Generated from cURL: curl --request PUT \\\r\n     --url https://api.clickup.com/api/v2/list/ \\\r\n     --header 'accept: application/json' \\\r\n     --header 'content-type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "Update List (test upload csv file)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
 							""
 						],
 						"type": "text/javascript",
@@ -268,7 +479,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{$randomAlphaNumeric}}\",\r\n    \"content\": \"string generated by Postman: {{$randomLoremWord}}\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{myfile}}\",\r\n    \"content\": \"some manual data string\"\r\n    \r\n}\r\n\r\n\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -343,6 +554,84 @@
 				"description": "Generated from cURL: curl --request DELETE \\\r\n     --url https://api.clickup.com/api/v2/list/ \\\r\n     --header 'accept: application/json'"
 			},
 			"response": []
+		},
+		{
+			"name": "View all Lists for home task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Fixed syntax error\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"console.log(jsonData.lists[0].id);\r",
+							"\r",
+							"jsonData.lists.forEach(item =>{\r",
+							"    console.log(item.id)\r",
+							"})\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "pk_194448192_K8TF4EQBGZS7DZJ2GKEXBKRL7O44LJ8A",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "https://api.clickup.com/api/v2/folder/90156853247/list",
+					"protocol": "https",
+					"host": [
+						"api",
+						"clickup",
+						"com"
+					],
+					"path": [
+						"api",
+						"v2",
+						"folder",
+						"90156853247",
+						"list"
+					]
+				},
+				"description": "Generated from cURL: curl --request GET \\\r\n     --url https://api.clickup.com/api/v2/folder//list \\\r\n     --header 'accept: application/json'"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "ListName",
+			"value": ""
+		},
+		{
+			"key": "$ListName",
+			"value": "",
+			"type": "default"
 		}
 	]
 }
